@@ -170,20 +170,19 @@
     // 1. ഒറിജിനൽ പോസ്റ്റർ ബാക്ക്ഗ്രൗണ്ട് വരയ്ക്കുന്നു
     ctx.drawImage(templateImg, 0, 0, W, H);
 
-    // 2. സ്വർണ്ണ വട്ടത്തിന്റെ കൃത്യമായ അളവുകൾ:
-    // താഴെയുള്ള വലിയ സ്വർണ്ണ വളയത്തിലേക്ക് കൃത്യമായി ക്രമീകരിച്ചിരിക്കുന്നു
-    const circleCenterX = W * 0.315; 
-    const circleCenterY = H * 0.605; 
-    const circleRadius  = W * 0.228; 
+    // 2. സ്വർണ്ണ വളയത്തിന്റെ കൃത്യമായ അളവുകൾ (Pixel-Perfect)
+    const circleCenterX = W * 0.230; 
+    const circleCenterY = H * 0.628; 
+    const circleRadius  = W * 0.222; 
 
-    // ✅ പെർഫെക്റ്റ് സർക്കിൾ ക്ലിപ്പിംഗ്
+    // ✅ പെർഫെക്റ്റ് സർക്കിൾ മാസ്കിംഗ്
     ctx.save();
     ctx.beginPath();
     ctx.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.clip();
 
-    // ഡ്രാഗ് & സൂം അനുസരിച്ച് ഫോട്ടോ വരയ്ക്കുന്നു
+    // ഫോട്ടോ ഡ്രാഗ് & സൂം അനുസരിച്ച് വരയ്ക്കുന്നു
     const minDim = Math.min(userImg.width, userImg.height);
     const drawSize = (circleRadius * 2) * zoom;
     const drawX = (circleCenterX - (drawSize / 2)) + offsetX;
@@ -195,10 +194,10 @@
     ctx.drawImage(userImg, sx, sy, minDim, minDim, drawX, drawY, drawSize, drawSize);
     ctx.restore();
 
-    // 3. പേര് താഴെ സ്ട്രിപ്പിൽ ഓട്ടോ ഫിറ്റ് ആയി എഴുതുന്നു
+    // 3. പേര് താഴെ ചുവപ്പ് സ്ട്രിപ്പിൽ ഓട്ടോ ഫിറ്റ് ആയി എഴുതുന്നു
     const name = document.getElementById('userName').value.trim();
     const fullText = ": " + name;
-    const textStartX = W * 0.36; // കൂടുതൽ ഇടത്തോട്ട് മാറ്റി
+    const textStartX = W * 0.36; 
     const maxTextWidth = W * 0.60; 
 
     let fontSize = Math.round(W * 0.050);
