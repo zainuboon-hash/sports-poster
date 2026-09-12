@@ -79,7 +79,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       margin-top: 10px;
     }
     .pad-row { display: flex; gap: 8px; }
@@ -87,13 +87,14 @@
       background: #e2e8f0;
       color: #1e293b;
       font-size: 15px;
-      padding: 8px 16px;
+      padding: 9px 18px;
       width: auto;
       margin: 0;
       border-radius: 6px;
+      font-weight: bold;
     }
     .pad-btn:active { background: #cbd5e1; }
-    .pad-reset { background: #f1f5f9; font-size: 12px; padding: 6px 12px; color: #64748b; }
+    .pad-reset { background: #fee2e2; font-size: 12px; padding: 6px 12px; color: #dc2626; }
     .hint { font-size: 12px; color: #0284c7; margin-top: 8px; font-weight: 500; }
   </style>
 </head>
@@ -129,18 +130,18 @@
         <input type="range" id="zoomSlider" min="0.5" max="3" step="0.05" value="1" oninput="onZoomChange(this.value)">
       </div>
 
-      <div style="margin-top: 10px;"><label>ഫോട്ടോ ക്രമീകരിക്കുക (Move Photo)</label></div>
+      <div style="margin-top: 10px;"><label>ഫോട്ടോ സ്ഥാനത്തേക്ക് മാറ്റുക (Move Photo)</label></div>
       <div class="move-pad">
-        <button class="pad-btn" onclick="movePhoto(0, -12)">⬆️ മുകളിലേക്ക്</button>
+        <button class="pad-btn" onclick="movePhoto(0, -15)">⬆️ മുകളിലേക്ക്</button>
         <div class="pad-row">
-          <button class="pad-btn" onclick="movePhoto(-12, 0)">⬅️ ഇടത്തോട്ട്</button>
+          <button class="pad-btn" onclick="movePhoto(-15, 0)">⬅️ ഇടത്തോട്ട്</button>
           <button class="pad-btn pad-reset" onclick="resetPosition()">റീസെറ്റ്</button>
-          <button class="pad-btn" onclick="movePhoto(12, 0)">വലത്തോട്ട് ➡️</button>
+          <button class="pad-btn" onclick="movePhoto(15, 0)">വലത്തോട്ട് ➡️</button>
         </div>
-        <button class="pad-btn" onclick="movePhoto(0, 12)">⬇️ താഴേക്ക്</button>
+        <button class="pad-btn" onclick="movePhoto(0, 15)">⬇️ താഴേക്ക്</button>
       </div>
 
-      <div class="hint">💡 ഫോട്ടോയിൽ വിരൽ വെച്ച് തൊട്ട് വലിച്ചും നീക്കാം</div>
+      <div class="hint">💡 ഫോട്ടോയിൽ വിരൽ വെച്ച് വലിച്ചോ മുകളിലെ ആരോ ബട്ടൺ വഴിയോ നീക്കാം</div>
     </div>
 
     <button class="btn-download" onclick="downloadPoster()">പോസ്റ്റർ ഡൗൺലോഡ് ചെയ്യുക 📥</button>
@@ -215,22 +216,20 @@
     canvas.width = W;
     canvas.height = H;
 
-    // 1. ഒറിജിനൽ പോസ്റ്റർ ബാക്ക്ഗ്രൗണ്ട് വരയ്ക്കുന്നു
+    // 1. ഒറിജിനൽ ബാക്ക്ഗ്രൗണ്ട് പോസ്റ്റർ
     ctx.drawImage(templateImg, 0, 0, W, H);
 
-    // 2. സ്വർണ്ണ വളയത്തിന്റെ ഫൈനൽ അളവുകൾ (Pixel-Perfect Alignment)
+    // 2. സ്വർണ്ണ വളയത്തിന്റെ ഫൈനൽ അലൈൻമെന്റ്
     const circleCenterX = W * 0.340; 
     const circleCenterY = H * 0.635; 
     const circleRadius  = W * 0.285; 
 
-    // ✅ സ്വർണ്ണ വളയത്തിന്റെ ഉള്ളിൽ ഫോട്ടോ കൃത്യമായി ഒതുക്കുന്നു
     ctx.save();
     ctx.beginPath();
     ctx.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.clip();
 
-    // യൂസർ ഫോട്ടോ സൂം & മൂവ് അനുസരിച്ച് വരയ്ക്കുന്നു
     const minDim = Math.min(userImg.width, userImg.height);
     const drawSize = (circleRadius * 2) * zoom;
     const drawX = (circleCenterX - (drawSize / 2)) + offsetX;
@@ -242,7 +241,7 @@
     ctx.drawImage(userImg, sx, sy, minDim, minDim, drawX, drawY, drawSize, drawSize);
     ctx.restore();
 
-    // 3. പേര് താഴെ സ്ട്രിപ്പിൽ ഓട്ടോ ഫിറ്റ് ആയി എഴുതുന്നു
+    // 3. പേര് താഴെ സ്ട്രിപ്പിൽ ഓട്ടോ ഫിറ്റ്
     const name = document.getElementById('userName').value.trim();
     const fullText = ": " + name;
     const textStartX = W * 0.36; 
@@ -260,7 +259,6 @@
     ctx.textAlign = "left";
     ctx.fillText(fullText, textStartX, H * 0.965);
 
-    // WhatsApp ഷെയർ ലിങ്ക്
     const shareUrl = window.location.href;
     const shareText = encodeURIComponent(`ഞാനും സബ്ജില്ലാ കായികമേളയെ പിന്തുണയ്ക്കുന്നു! നിങ്ങളും പോസ്റ്റർ നിർമ്മിക്കൂ: ${shareUrl}`);
     document.getElementById('waShareBtn').href = `https://api.whatsapp.com/send?text=${shareText}`;
