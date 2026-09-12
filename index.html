@@ -170,17 +170,18 @@
     // 1. ഒറിജിനൽ പോസ്റ്റർ ബാക്ക്ഗ്രൗണ്ട് വരയ്ക്കുന്നു
     ctx.drawImage(templateImg, 0, 0, W, H);
 
-    // 2. സ്വർണ്ണ വട്ടത്തിന്റെ ശരിയായ സ്ഥാനവും വലിപ്പവും
-    const circleCenterX = W * 0.355; 
-    const circleCenterY = H * 0.540; 
-    const circleRadius  = W * 0.220; 
+    // 2. സ്വർണ്ണ വട്ടത്തിന്റെ കൃത്യമായ അളവുകൾ:
+    // താഴെയുള്ള വലിയ സ്വർണ്ണ വളയത്തിലേക്ക് കൃത്യമായി ക്രമീകരിച്ചിരിക്കുന്നു
+    const circleCenterX = W * 0.315; 
+    const circleCenterY = H * 0.605; 
+    const circleRadius  = W * 0.228; 
 
-    // ✅ പെർഫെക്റ്റ് സർക്കിൾ ക്ലിപ്പിംഗ് (ഫോട്ടോ ഇതിന് പുറത്തേക്ക് കടക്കില്ല)
+    // ✅ പെർഫെക്റ്റ് സർക്കിൾ ക്ലിപ്പിംഗ്
     ctx.save();
     ctx.beginPath();
     ctx.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2, true);
     ctx.closePath();
-    ctx.clip(); // ഇതിലൂടെ ഫോട്ടോ വട്ടത്തിനുള്ളിൽ മാത്രം ഒതുങ്ങും
+    ctx.clip();
 
     // ഡ്രാഗ് & സൂം അനുസരിച്ച് ഫോട്ടോ വരയ്ക്കുന്നു
     const minDim = Math.min(userImg.width, userImg.height);
@@ -192,18 +193,17 @@
     const sy = (userImg.height - minDim) / 2;
 
     ctx.drawImage(userImg, sx, sy, minDim, minDim, drawX, drawY, drawSize, drawSize);
-    ctx.restore(); // ക്ലിപ്പ് റദ്ദാക്കുന്നു
+    ctx.restore();
 
-    // 3. പേര് ഇടത്തുനിന്ന് തുടങ്ങി ഓട്ടോമാറ്റിക് ആയി വലിപ്പം കുറച്ച് ഫിറ്റ് ചെയ്യുന്നു
+    // 3. പേര് താഴെ സ്ട്രിപ്പിൽ ഓട്ടോ ഫിറ്റ് ആയി എഴുതുന്നു
     const name = document.getElementById('userName').value.trim();
     const fullText = ": " + name;
-    const textStartX = W * 0.38; // കൂടുതൽ ഇടത്തോട്ട് മാറ്റി
-    const maxTextWidth = W * 0.58; // പരമാവധി സ്പേസ്
+    const textStartX = W * 0.36; // കൂടുതൽ ഇടത്തോട്ട് മാറ്റി
+    const maxTextWidth = W * 0.60; 
 
     let fontSize = Math.round(W * 0.050);
     ctx.font = `bold ${fontSize}px sans-serif`;
 
-    // വലിയ പേരാണെങ്കിൽ അക്ഷരങ്ങൾ തനിയെ ചെറുതാകുന്നു
     while (ctx.measureText(fullText).width > maxTextWidth && fontSize > 16) {
       fontSize -= 1;
       ctx.font = `bold ${fontSize}px sans-serif`;
