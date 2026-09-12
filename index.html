@@ -161,12 +161,10 @@
   let startX = 0;
   let startY = 0;
 
-  // പോസ്റ്റർ ചിത്രം ലോഡ് ചെയ്യുന്നു
   templateImg.onload = function() {
     templateLoaded = true;
   };
   templateImg.onerror = function() {
-    // വലിയ അക്ഷരത്തിലാണെങ്കിൽ
     templateImg.src = "Poster.jpg";
   };
   templateImg.src = "poster.jpg";
@@ -221,17 +219,15 @@
     canvas.width = W;
     canvas.height = H;
 
-    // 1. ഒറിജിനൽ പോസ്റ്റർ ബാക്ക്ഗ്രൗണ്ട് വരയ്ക്കുന്നു
     if (templateLoaded && templateImg.complete) {
       ctx.drawImage(templateImg, 0, 0, W, H);
     }
 
-    // 2. സ്വർണ്ണ വളയത്തിന്റെ കൃത്യമായ അളവുകൾ
-    const circleCenterX = W * 0.285; 
-    const circleCenterY = H * 0.425; 
-    const circleRadius  = W * 0.200; 
+    // സ്വർണ്ണ വളയത്തിന്റെ യഥാർത്ഥ സ്ഥാനം
+    const circleCenterX = W * 0.252; 
+    const circleCenterY = H * 0.672; 
+    const circleRadius  = W * 0.198; 
 
-    // ✅ പെർഫെക്റ്റ് മാസ്കിംഗ്
     ctx.save();
     ctx.beginPath();
     ctx.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2, true);
@@ -249,7 +245,7 @@
     ctx.drawImage(userImg, sx, sy, minDim, minDim, drawX, drawY, drawSize, drawSize);
     ctx.restore();
 
-    // 3. പേര് താഴെ സ്ട്രിപ്പിൽ ഓട്ടോ ഫിറ്റ്
+    // പേര് താഴെ സ്ട്രിപ്പിൽ
     const name = document.getElementById('userName').value.trim();
     const fullText = ": " + name;
     const textStartX = W * 0.36; 
@@ -267,7 +263,6 @@
     ctx.textAlign = "left";
     ctx.fillText(fullText, textStartX, H * 0.965);
 
-    // WhatsApp ഷെയർ ലിങ്ക്
     const shareUrl = window.location.href;
     const shareText = encodeURIComponent(`ഞാനും സബ്ജില്ലാ കായികമേളയെ പിന്തുണയ്ക്കുന്നു! നിങ്ങളും പോസ്റ്റർ നിർമ്മിക്കൂ: ${shareUrl}`);
     document.getElementById('waShareBtn').href = `https://api.whatsapp.com/send?text=${shareText}`;
