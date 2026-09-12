@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>സബ്ജില്ലാ കായികമേള 🏆</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #eef2f6;
+      margin: 0;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #ffffff;
+      max-width: 440px;
+      width: 100%;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    h2 { color: #d32f2f; margin-top: 0; font-size: 20px; font-weight: 700; }
+    p { color: #555; font-size: 14px; margin-bottom: 20px; }
+    .form-group { text-align: left; margin-bottom: 15px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #333; }
+    input[type="text"], input[type="file"] {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+    }
+    button {
+      width: 100%;
+      padding: 13px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn-create { background: #d32f2f; color: white; }
+    .btn-download { background: #007bff; color: white; margin-top: 15px; }
+    .btn-wa { background: #25D366; color: white; text-decoration: none; display: block; padding: 13px; border-radius: 8px; font-weight: 600; margin-top: 10px; }
+    #resultArea { display: none; margin-top: 20px; }
+    canvas { width: 100%; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    #statusMsg { margin-top: 12px; font-size: 14px; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>സബ്ജില്ലാ കായികമേള 🏆</h2>
+  <p>നിങ്ങളുടെ പേരും ഫോട്ടോയും ചേർത്ത് ആശംസാ പോസ്റ്റർ തയ്യാറാക്കൂ</p>
+
+  <div class="form-group">
+    <label>നിങ്ങളുടെ പേര്</label>
+    <input type="text" id="userName" placeholder="പേര് ടൈപ്പ് ചെയ്യുക">
+  </div>
+
+  <div class="form-group">
+    <label>നിങ്ങളുടെ ഫോട്ടോ</label>
+    <input type="file" id="userPhoto" accept="image/*">
+  </div>
+
+  <button class="btn-create" id="submitBtn" onclick="generatePoster()">പോസ്റ്റർ തയ്യാറാക്കൂ 🚀</button>
+  <div id="statusMsg"></div>
+
+  <div id="resultArea">
+    <canvas id="posterCanvas"></canvas>
+    <button class="btn-download" onclick="downloadPoster()">പോസ്റ്റർ ഡൗൺലോഡ് ചെയ്യുക 📥</button>
+    <a id="waShareBtn" class="btn-wa" href="#" target="_blank">WhatsApp വഴി ഷെയർ ചെയ്യുക 💬</a>
+  </div>
+</div>
+
+<script>
+  function setStatus(text, color) {
+    const el = document.getElementById('statusMsg');
+    el.style.color = color;
+    el.innerText = text;
+  }
+
+  function generatePoster() {
+    const name = document.getElementById('userName').value.trim();
+    const fileInput = document.getElementById('userPhoto').files[0];
+
+    if (!name) {
+      alert("ദയവായി നിങ്ങളുടെ പേര് നൽകുക!");
+      return;
+    }
+    if (!fileInput) {
+      alert("ദയവായി ഒരു ഫോട്ടോ തിരഞ്ഞെടുക്കുക!");
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    setStatus("പോസ്റ്റർ നിർമ്മിക്കുന്നു...", "#d32f2f");
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const userImg = new Image();
+      userImg.onload = function() {
+        drawOnCanvas(name, userImg);
+      };
+      userImg.onerror = function() {
+        btn.disabled = false;
+        setStatus("ഫോട്ടോ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല.", "red");
+      };
+      userImg.src = e.target.result;
+    };
+    reader.readAsDataURL(fileInput);
+  }
+
+  function drawOnCanvas(name, userImg) {
+    const btn = document.getElementById('submitBtn');
+    const templateImg = new Image();
+
+    templateImg.onload = function() {
+      const canvas = document.getElementById('posterCanvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = templateImg.naturalWidth || 576;
+      canvas.height = templateImg.naturalHeight || 1024;
+
+      const W = canvas.width;
+      const H = canvas.height;
+
+      // 1. യൂസർ ഫോട്ടോ വട്ടത്തിൽ വരയ്ക്കുന്നു
+      const circleCenterX = W * 0.392; 
+      const circleCenterY = H * 0.626; 
+      const circleRadius  = W * 0.224; 
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2, true);
+      ctx.closePath();
+      ctx.clip();
+
+      const minDim = Math.min(userImg.width, userImg.height);
+      const sx = (userImg.width - minDim) / 2;
+      const sy = (userImg.height - minDim) / 2;
+      ctx.drawImage(userImg, sx, sy, minDim, minDim, circleCenterX - circleRadius, circleCenterY - circleRadius, circleRadius * 2, circleRadius * 2);
+      ctx.restore();
+
+      // 2. ബാക്ക്ഗ്രൗണ്ട് പോസ്റ്റർ ഫ്രെയിം ഇതിനു മുകളിൽ വരയ്ക്കുന്നു
+      ctx.drawImage(templateImg, 0, 0, W, H);
+
+      // 3. പേര് താഴെ സ്ട്രിപ്പിൽ എഴുതുന്നു
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "left";
+      ctx.font = `bold ${Math.round(W * 0.052)}px sans-serif`;
+      ctx.fillText(": " + name, W * 0.48, H * 0.965);
+
+      setStatus("", "");
+      document.getElementById('resultArea').style.display = 'block';
+      btn.disabled = false;
+
+      // WhatsApp ഷെയർ ലിങ്ക്
+      const shareUrl = window.location.href;
+      const shareText = encodeURIComponent(`ഞാനും സബ്ജില്ലാ കായികമേളയെ പിന്തുണയ്ക്കുന്നു! നിങ്ങളും പോസ്റ്റർ നിർമ്മിക്കൂ: ${shareUrl}`);
+      document.getElementById('waShareBtn').href = `https://api.whatsapp.com/send?text=${shareText}`;
+    };
+
+    templateImg.onerror = function() {
+      btn.disabled = false;
+      setStatus("പോസ്റ്റർ ചിത്രം ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല. poster.jpg എന്ന ഫയൽ ഉണ്ടോ എന്ന് ഉറപ്പാക്കുക.", "red");
+    };
+
+    // ഒരേ ഫോൾഡറിലെ ചിത്രം ലോഡ് ചെയ്യുന്നു (CORS പ്രശ്നമില്ല)
+    templateImg.src = "poster.jpg";
+  }
+
+  function downloadPoster() {
+    const canvas = document.getElementById('posterCanvas');
+    const link = document.createElement('a');
+    link.download = 'sports_poster.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+</script>
+
+</body>
+</html>
