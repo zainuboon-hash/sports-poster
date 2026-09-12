@@ -215,22 +215,22 @@
     canvas.width = W;
     canvas.height = H;
 
-    // 1. ഒറിജിനൽ പോസ്റ്റർ ബാക്ക്ഗ്രൗണ്ട്
+    // 1. ഒറിജിനൽ പോസ്റ്റർ ബാക്ക്ഗ്രൗണ്ട് വരയ്ക്കുന്നു
     ctx.drawImage(templateImg, 0, 0, W, H);
 
-    // 2. സ്വർണ്ണ വളയത്തിന്റെ കൃത്യമായ അളവുകൾ (Pixel-Perfect Alignment)
-    const circleCenterX = W * 0.315; 
-    const circleCenterY = H * 0.480; 
-    const circleRadius  = W * 0.225; 
+    // 2. സ്വർണ്ണ വളയത്തിന്റെ ഫൈനൽ അളവുകൾ (Pixel-Perfect Alignment)
+    const circleCenterX = W * 0.340; 
+    const circleCenterY = H * 0.635; 
+    const circleRadius  = W * 0.285; 
 
-    // ✅ സ്വർണ്ണ വളയത്തിന്റെ സ്ഥാനത്ത് മാത്രം കൃത്യമായ സർക്കിൾ ക്ലിപ്പിംഗ്
+    // ✅ സ്വർണ്ണ വളയത്തിന്റെ ഉള്ളിൽ ഫോട്ടോ കൃത്യമായി ഒതുക്കുന്നു
     ctx.save();
     ctx.beginPath();
     ctx.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2, true);
     ctx.closePath();
     ctx.clip();
 
-    // യൂസർ ഫോട്ടോ സൂം & മൂവ് അനുസരിച്ച് വളയത്തിനുള്ളിൽ വരയ്ക്കുന്നു
+    // യൂസർ ഫോട്ടോ സൂം & മൂവ് അനുസരിച്ച് വരയ്ക്കുന്നു
     const minDim = Math.min(userImg.width, userImg.height);
     const drawSize = (circleRadius * 2) * zoom;
     const drawX = (circleCenterX - (drawSize / 2)) + offsetX;
