@@ -10,7 +10,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: #eef2f6;
       margin: 0;
-      padding: 10px;
+      padding: 12px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -20,13 +20,13 @@
       background: #ffffff;
       max-width: 440px;
       width: 100%;
-      padding: 18px;
+      padding: 20px;
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.08);
       text-align: center;
     }
     h2 { color: #d32f2f; margin-top: 0; font-size: 20px; font-weight: 700; }
-    p { color: #555; font-size: 13px; margin-bottom: 14px; }
+    p { color: #555; font-size: 13px; margin-bottom: 15px; }
     .form-group { text-align: left; margin-bottom: 12px; }
     label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #333; }
     input[type="text"], input[type="file"] {
@@ -58,8 +58,6 @@
       overflow: hidden;
       border-radius: 12px;
       touch-action: none;
-      user-select: none;
-      -webkit-user-select: none;
     }
     canvas {
       width: 100%;
@@ -67,10 +65,9 @@
       display: block;
       border-radius: 12px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-      touch-action: none;
       cursor: move;
     }
-    .controls { background: #f8fafc; padding: 12px; border-radius: 10px; margin-top: 10px; border: 1px solid #e2e8f0; }
+    .controls { background: #f8fafc; padding: 12px; border-radius: 10px; margin-top: 12px; border: 1px solid #e2e8f0; }
     .controls label { font-size: 13px; color: #475569; font-weight: 600; }
     .slider-row { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
     .slider-row input[type="range"] { flex: 1; accent-color: #d32f2f; height: 6px; }
@@ -87,7 +84,7 @@
       background: #e2e8f0;
       color: #1e293b;
       font-size: 15px;
-      padding: 9px 18px;
+      padding: 8px 16px;
       width: auto;
       margin: 0;
       border-radius: 6px;
@@ -96,6 +93,7 @@
     .pad-btn:active { background: #cbd5e1; }
     .pad-reset { background: #fee2e2; font-size: 12px; padding: 6px 12px; color: #dc2626; }
     .hint { font-size: 12px; color: #0284c7; margin-top: 8px; font-weight: 500; }
+    #statusMsg { margin-top: 10px; font-size: 14px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -115,7 +113,8 @@
       <input type="file" id="userPhoto" accept="image/*">
     </div>
 
-    <button class="btn-create" onclick="startEditing()">പോസ്റ്റർ തയ്യാറാക്കൂ 🚀</button>
+    <button class="btn-create" id="submitBtn" onclick="startEditing()">പോസ്റ്റർ തയ്യാറാക്കൂ 🚀</button>
+    <div id="statusMsg"></div>
   </div>
 
   <div id="editorArea">
@@ -132,13 +131,13 @@
 
       <div style="margin-top: 10px;"><label>ഫോട്ടോ സ്ഥാനത്തേക്ക് മാറ്റുക (Move Photo)</label></div>
       <div class="move-pad">
-        <button class="pad-btn" onclick="movePhoto(0, -15)">⬆️ മുകളിലേക്ക്</button>
+        <button class="pad-btn" onclick="movePhoto(0, -12)">⬆️ മുകളിലേക്ക്</button>
         <div class="pad-row">
-          <button class="pad-btn" onclick="movePhoto(-15, 0)">⬅️ ഇടത്തോട്ട്</button>
+          <button class="pad-btn" onclick="movePhoto(-12, 0)">⬅️ ഇടത്തോട്ട്</button>
           <button class="pad-btn pad-reset" onclick="resetPosition()">റീസെറ്റ്</button>
-          <button class="pad-btn" onclick="movePhoto(15, 0)">വലത്തോട്ട് ➡️</button>
+          <button class="pad-btn" onclick="movePhoto(12, 0)">വലത്തോട്ട് ➡️</button>
         </div>
-        <button class="pad-btn" onclick="movePhoto(0, 15)">⬇️ താഴേക്ക്</button>
+        <button class="pad-btn" onclick="movePhoto(0, 12)">⬇️ താഴേക്ക്</button>
       </div>
 
       <div class="hint">💡 ഫോട്ടോയിൽ വിരൽ വെച്ച് വലിച്ചോ മുകളിലെ ആരോ ബട്ടൺ വഴിയോ നീക്കാം</div>
@@ -162,10 +161,15 @@
   let startX = 0;
   let startY = 0;
 
-  templateImg.src = "poster.jpg";
+  // പോസ്റ്റർ ചിത്രം ലോഡ് ചെയ്യുന്നു
   templateImg.onload = function() {
     templateLoaded = true;
   };
+  templateImg.onerror = function() {
+    // വലിയ അക്ഷരത്തിലാണെങ്കിൽ
+    templateImg.src = "Poster.jpg";
+  };
+  templateImg.src = "poster.jpg";
 
   function startEditing() {
     const name = document.getElementById('userName').value.trim();
@@ -179,10 +183,11 @@
       alert("ദയവായി ഒരു ഫോട്ടോ തിരഞ്ഞെടുക്കുക!");
       return;
     }
-    if (!templateLoaded) {
-      alert("പോസ്റ്റർ ലോഡ് ആയിക്കൊണ്ടിരിക്കുകയാണ്. അല്പം കഴിഞ്ഞ് വീണ്ടും ശ്രമിക്കുക.");
-      return;
-    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    document.getElementById('statusMsg').innerText = "ചിത്രം തയ്യാറാക്കുന്നു...";
+    document.getElementById('statusMsg').style.color = "#d32f2f";
 
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -206,7 +211,7 @@
   }
 
   function renderCanvas() {
-    if (!templateLoaded || !userImgLoaded) return;
+    if (!userImgLoaded) return;
 
     const canvas = document.getElementById('posterCanvas');
     const ctx = canvas.getContext('2d');
@@ -216,14 +221,17 @@
     canvas.width = W;
     canvas.height = H;
 
-    // 1. ഒറിജിനൽ ബാക്ക്ഗ്രൗണ്ട് പോസ്റ്റർ
-    ctx.drawImage(templateImg, 0, 0, W, H);
+    // 1. ഒറിജിനൽ പോസ്റ്റർ ബാക്ക്ഗ്രൗണ്ട് വരയ്ക്കുന്നു
+    if (templateLoaded && templateImg.complete) {
+      ctx.drawImage(templateImg, 0, 0, W, H);
+    }
 
-    // 2. താഴെയുള്ള സ്വർണ്ണ വളയത്തിന്റെ അളവുകൾ
-    const circleCenterX = W * 0.315; 
-    const circleCenterY = H * 0.755; 
-    const circleRadius  = W * 0.185; 
+    // 2. സ്വർണ്ണ വളയത്തിന്റെ കൃത്യമായ അളവുകൾ
+    const circleCenterX = W * 0.285; 
+    const circleCenterY = H * 0.425; 
+    const circleRadius  = W * 0.200; 
 
+    // ✅ പെർഫെക്റ്റ് മാസ്കിംഗ്
     ctx.save();
     ctx.beginPath();
     ctx.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2, true);
@@ -259,6 +267,7 @@
     ctx.textAlign = "left";
     ctx.fillText(fullText, textStartX, H * 0.965);
 
+    // WhatsApp ഷെയർ ലിങ്ക്
     const shareUrl = window.location.href;
     const shareText = encodeURIComponent(`ഞാനും സബ്ജില്ലാ കായികമേളയെ പിന്തുണയ്ക്കുന്നു! നിങ്ങളും പോസ്റ്റർ നിർമ്മിക്കൂ: ${shareUrl}`);
     document.getElementById('waShareBtn').href = `https://api.whatsapp.com/send?text=${shareText}`;
