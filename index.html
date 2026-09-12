@@ -144,7 +144,7 @@
     </div>
 
     <button class="btn-download" onclick="downloadPoster()">പോസ്റ്റർ ഡൗൺലോഡ് ചെയ്യുക 📥</button>
-    <a id="waShareBtn" class="btn-wa" href="#" target="_blank">WhatsApp വഴി ഷെയർ ചെയ്യുക 💬</a>
+    <button class="btn-wa" onclick="shareToWhatsApp()">വാട്സാപ്പിൽ പോസ്റ്റർ ഷെയർ ചെയ്യുക 💬</button>
   </div>
 </div>
 
@@ -224,7 +224,7 @@
       ctx.drawImage(templateImg, 0, 0, W, H);
     }
 
-    // 2. സ്വർണ്ണ വളയത്തിന്റെ കൃത്യമായ അളവുകൾ (Pixel-Perfect Alignment)
+    // 2. സ്വർണ്ണ വളയത്തിന്റെ അളവുകൾ
     const circleCenterX = W * 0.226; 
     const circleCenterY = H * 0.603; 
     const circleRadius  = W * 0.224; 
@@ -264,10 +264,6 @@
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "left";
     ctx.fillText(fullText, textStartX, H * 0.965);
-
-    const shareUrl = window.location.href;
-    const shareText = encodeURIComponent(`ഞാനും സബ്ജില്ലാ കായികമേളയെ പിന്തുണയ്ക്കുന്നു! നിങ്ങളും പോസ്റ്റർ നിർമ്മിക്കൂ: ${shareUrl}`);
-    document.getElementById('waShareBtn').href = `https://api.whatsapp.com/send?text=${shareText}`;
   }
 
   function onZoomChange(val) {
@@ -340,12 +336,46 @@
     window.addEventListener('mouseup', function() { isDragging = false; });
   }
 
+  // ഗാലറിയിലേക്ക് ശരിയായ ഫയലായി ഡൗൺലോഡ് ചെയ്യാൻ
   function downloadPoster() {
     const canvas = document.getElementById('posterCanvas');
-    const link = document.createElement('a');
-    link.download = 'sports_poster.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    canvas.toBlob(function(blob) {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = 'kayikamela_poster.jpg';
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    }, 'image/jpeg', 0.95);
+  }
+
+  // വാട്സാപ്പിലേക്ക് ചിത്രം നേരിട്ട് ഷെയർ ചെയ്യാൻ
+  async function shareToWhatsApp() {
+    const canvas = document.getElementById('posterCanvas');
+    canvas.toBlob(async function(blob) {
+      const file = new File([blob], 'kayikamela_poster.jpg', { type: 'image/jpeg' });
+      
+      // മൊബൈലിൽ ഫോട്ടോ നേരിട്ട് ഷെയർ ചെയ്യാനുള്ള സംവിധാനം
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: 'സബ്ജില്ലാ കായികമേള 🏆',
+            text: 'ഞാനും സബ്ജില്ലാ കായികമേളയെ പിന്തുണയ്ക്കുന്നു! നിങ്ങളും പോസ്റ്റർ നിർമ്മിക്കൂ: ' + window.location.href
+          });
+        } catch (err) {
+          // യൂസർ ക്യാൻസൽ ചെയ്താൽ ഒന്നും ചെയ്യേണ്ടതില്ല
+        }
+      } else {
+        // ബ്രൗസർ സപ്പോർട്ട് ചെയ്തില്ലെങ്കിൽ ഡൗൺലോഡ് ചെയ്ത് വാട്സാപ്പ് തുറക്കുന്നു
+        downloadPoster();
+        setTimeout(() => {
+          window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('ഞാനും സബ്ജില്ലാ കായികമേളയെ പിന്തുണയ്ക്കുന്നു! നിങ്ങളും പോസ്റ്റർ നിർമ്മിക്കൂ: ' + window.location.href), '_blank');
+        }, 1000);
+      }
+    }, 'image/jpeg', 0.95);
   }
 </script>
 
