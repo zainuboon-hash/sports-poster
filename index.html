@@ -134,10 +134,13 @@
       const W = canvas.width;
       const H = canvas.height;
 
-      // 1. യൂസർ ഫോട്ടോ വട്ടത്തിൽ വരയ്ക്കുന്നു
+      // 1. ആദ്യം ഒറിജിനൽ പോസ്റ്റർ ഫ്രെയിം വരയ്ക്കുന്നു
+      ctx.drawImage(templateImg, 0, 0, W, H);
+
+      // 2. തുടർന്ന് ആ വട്ടത്തിന്റെ മുകളിലേക്ക് യൂസർ ഫോട്ടോ ക്ലിപ്പ് ചെയ്ത് കൃത്യമായി വരയ്ക്കുന്നു
       const circleCenterX = W * 0.392; 
       const circleCenterY = H * 0.626; 
-      const circleRadius  = W * 0.224; 
+      const circleRadius  = W * 0.220; // വട്ടത്തിന്റെ ബോർഡറിന് ഉള്ളിൽ കൃത്യമായി ഇരിക്കാൻ
 
       ctx.save();
       ctx.beginPath();
@@ -150,9 +153,6 @@
       const sy = (userImg.height - minDim) / 2;
       ctx.drawImage(userImg, sx, sy, minDim, minDim, circleCenterX - circleRadius, circleCenterY - circleRadius, circleRadius * 2, circleRadius * 2);
       ctx.restore();
-
-      // 2. ബാക്ക്ഗ്രൗണ്ട് പോസ്റ്റർ ഫ്രെയിം ഇതിനു മുകളിൽ വരയ്ക്കുന്നു
-      ctx.drawImage(templateImg, 0, 0, W, H);
 
       // 3. പേര് താഴെ സ്ട്രിപ്പിൽ എഴുതുന്നു
       ctx.fillStyle = "#ffffff";
@@ -172,10 +172,9 @@
 
     templateImg.onerror = function() {
       btn.disabled = false;
-      setStatus("പോസ്റ്റർ ചിത്രം ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല. poster.jpg എന്ന ഫയൽ ഉണ്ടോ എന്ന് ഉറപ്പാക്കുക.", "red");
+      setStatus("പോസ്റ്റർ ചിത്രം ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല.", "red");
     };
 
-    // ഒരേ ഫോൾഡറിലെ ചിത്രം ലോഡ് ചെയ്യുന്നു (CORS പ്രശ്നമില്ല)
     templateImg.src = "poster.jpg";
   }
 
